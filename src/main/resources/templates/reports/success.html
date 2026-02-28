@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<div th:fragment="content">
+  <div class="alert alert-success" role="alert">
+    <h4 class="alert-heading">Report Saved Successfully!</h4>
+    <p>The inspection report has been saved to the database.</p>
+    <hr>
+    <a th:href="@{/technician/dashboard}" class="btn btn-primary">Back To Dashboard</a>
+  </div>
+</div>
+</body>
+</html>

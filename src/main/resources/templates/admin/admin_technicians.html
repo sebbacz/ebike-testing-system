@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:replace="~{fragments/heading :: heading (title = 'Technician')}"/>
+  <link rel="stylesheet" th:href="@{/css/techniciandashboard.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="technician-dashboard-container">
+  <h2>Technicians</h2>
+  <div class="card">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Username</th>
+        <th>Experience (Years)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="technician : ${technicians}">
+        <td th:text="${technician.name}"></td>
+        <td th:text="${technician.experienceYears}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

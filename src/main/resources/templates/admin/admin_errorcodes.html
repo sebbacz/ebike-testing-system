@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:replace="~{fragments/heading :: heading (title = 'Error Codes')}"/>
+  <link rel="stylesheet" th:href="@{/css/techniciandashboard.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="technician-dashboard-container">
+  <h2>Error Codes</h2>
+  <div class="card admin-table-errorcodes">
+    <ul class="list-group">
+      <li class="list-group-item" th:each="errorCode : ${errorCodes}" th:text="${errorCode}"></li>
+    </ul>
+  </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

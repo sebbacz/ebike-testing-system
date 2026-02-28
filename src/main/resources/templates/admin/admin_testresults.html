@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:replace="~{fragments/heading :: heading (title = 'Test Results')}"/>
+  <link rel="stylesheet" th:href="@{/css/techniciandashboard.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="technician-dashboard-container">
+  <h2>Test Results</h2>
+  <div class="card admin-table-testresults">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Test ID</th>
+        <th>Timestamp</th>
+        <th>Battery Voltage</th>
+        <th>Battery Current</th>
+        <th>Engine Power (W)</th>
+        <th>Wheel Power (W)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="testResult : ${testResults}">
+        <td th:text="${testResult.test.id}"></td>
+        <td th:text="${testResult.timestamp}"></td>
+        <td th:text="${testResult.batteryVoltage}"></td>
+        <td th:text="${testResult.batteryCurrent}"></td>
+        <td th:text="${testResult.enginePowerWatt}"></td>
+        <td th:text="${testResult.wheelPowerWatt}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

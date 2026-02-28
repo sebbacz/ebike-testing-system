@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated QR Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+        img {
+            margin-top: 20px;
+            border: 2px solid #343a40;
+            border-radius: 8px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>QR Code for Bike ID: <span th:text="${bikeId}"></span></h1>
+    <div>
+        <img th:src="'data:image/png;base64,' + ${qrCode}" alt="QR Code">
+    </div>
+    <div class="footer">
+        <p>Scan the QR code to view the bike's test history.</p>
+    </div>
+</div>
+</body>
+</html>

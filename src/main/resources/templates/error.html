@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/fragments/heading :: heading (title = 'ERROR!')}">
+<!--    <meta charset="UTF-8"/>-->
+<!--    <th:block th:replace="~{fragments/heading :: heading (title = 'Error!')}"/>-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1"/>-->
+
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container technician-dashboard-container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-start">ERROR!</h2>
+    </div>
+    <p class="text-start">An error occurred. :(</p>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

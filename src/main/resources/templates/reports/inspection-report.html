@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/heading :: heading (title = 'Inspection Report')}"/>
+    <link rel="stylesheet" th:href="@{/css/report.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="report-header">
+    <div class="d-flex">
+        <h1>Date: [[${#temporals.format(currentDate, 'dd/MM/yyyy')}]]</h1></div>
+    <div class="score-box">
+        <span class="score-label">Score:</span> [[${#numbers.formatDecimal(reportDto.overallScore, 0, 0)}]]
+    </div>
+</div>
+
+<div class="container-fluid">
+    <form id="inspectionForm">
+        <input type="hidden" id="testProceduresJson" th:value="${testProceduresJson}">
+        <input type="hidden" id="initialBearingConditionsJson" th:value="${bearingConditionsJson}">
+        <input type="hidden" id="visualInspectionItems" th:value="${visualInspectionItemsJson}">
+        <input type="hidden" id="functionalCheckItems" th:value="${functionalCheckItemsJson}">
+        <input type="hidden" id="testUuid" th:value="${testUuid}">
+        <input type="hidden" id="customerBikeId" th:value="${customerBikeId}">
+        <input type="hidden" id="ebikeBrand" th:value="${ebike.brand}">
+        <input type="hidden" id="ebikeModel" th:value="${ebike.model}">
+        <input type="hidden" id="ebikeBattery" th:value="${ebike.battery}">
+        <input type="hidden" id="ebikeId" th:value="${ebike.id}">
+
+        <input type="hidden" id="testProcScore" th:value="${#numbers.formatDecimal(reportDto.testProcScore, 0, 0)}">
+        <input type="hidden" id="nominalLoadContW"
+               th:value="${#numbers.formatDecimal(reportDto.nominalLoadContW, 0, 0)}">
+        <input type="hidden" id="nominalTempRiseCPerWh"
+               th:value="${#numbers.formatDecimal(reportDto.nominalTempRiseCPerWh, 1, 1)}">
+        <input type="hidden" id="nominalLoadScore"
+               th:value="${#numbers.formatDecimal(reportDto.nominalLoadScore, 0, 0)}">
+        <input type="hidden" id="batteryTestCapacityWh"
+               th:value="${#numbers.formatDecimal(reportDto.batteryTestCapacityWh, 0, 0)}">
+        <input type="hidden" id="batteryTestHealthPct"
+               th:value="${#numbers.formatDecimal(reportDto.batteryTestHealthPct, 0, 0)}">
+        <input type="hidden" id="batteryTestScore"
+               th:value="${#numbers.formatDecimal(reportDto.batteryTestScore, 0, 0)}">
+        <input type="hidden" id="bearingScore" th:value="${#numbers.formatDecimal(reportDto.bearingScore, 0, 0)}">
+
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="section-box">
+                    <h3>Identification</h3>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Test UUID</label>
+                            <input type="text" class="form-control form-control-sm" th:value="${test.uuid}" readonly
+                                   name="uuid">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Brand</label>
+                            <input type="text" class="form-control form-control-sm" th:value="${ebike.brand}" readonly
+                                   name="brand">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Engine Type</label>
+                            <input type="text" class="form-control form-control-sm" th:value="${ebike.model}" readonly
+                                   name="model">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Drive Type</label>
+                            <input type="text" class="form-control form-control-sm" th:value="${ebike.ebikeModel.name}"
+                                   readonly name="ebikeModel">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Battery Capacity</label>
+                            <input type="text" class="form-control form-control-sm"
+                                   th:value="${reportDto.batteryCapacityWh}" readonly name="batteryCapacityWhInput">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">First Registration</label>
+                            <input type="text" class="form-control form-control-sm" th:value="${ebike.addedDate}"
+                                   readonly name="firstRegistration">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Max Support</label>
+                            <input type="text" class="form-control form-control-sm"
+                                   th:value="${reportDto.maxSupportPct}" readonly name="maxSupportPctInput">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Engine Power (max)</label>
+                            <input type="text" class="form-control form-control-sm"
+                                   th:value="${reportDto.enginePowerMaxW}" readonly name="enginePowerMaxWInput">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Engine Power (nominal)</label>
+                            <input type="text" class="form-control form-control-sm"
+                                   th:value="${reportDto.enginePowerNomW}" readonly name="enginePowerNomWInput">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Engine Torque</label>
+                            <input type="text" class="form-control form-control-sm"
+                                   th:value="${reportDto.engineTorqueNm}" readonly name="engineTorqueNmInput">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Visual Inspection</h3>
+                    <div class="legend">
+                        <span class="legend-item">-- Very Bad</span>
+                        <span class="legend-item">- Bad</span>
+                        <span class="legend-item"> Neutral</span>
+                        <span class="legend-item">+ Good</span>
+                        <span class="legend-item">++ Very Good</span>
+                        <span class="legend-item">n.a. Not Applicable</span></div>
+                    <table class="table table-sm table-bordered" id="visualInspectionTable">
+                    </table>
+                </div>
+
+                <div class="section-box">
+                    <h3>Comments</h3>
+                    <div class="mb-3">
+                        <textarea class="form-control" name="comment" rows="4"
+                                  th:text="${reportDto.comment}"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="section-box">
+                    <h3>Test Procedures Overview</h3>
+                    <table class="table table-sm table-bordered" id="testProceduresTable">
+                        <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Result</th>
+                            <th>Deviation</th>
+                            <th>Unit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="proc : ${reportDto.testProcedures}">
+                            <td th:text="${proc.name}"></td>
+                            <td th:text="${#numbers.formatDecimal(proc.result, 0, 1)}"></td>
+                            <td th:text="${#numbers.formatDecimal(proc.deviationPct, 0, 1)} + '%'"></td>
+                            <td th:text="${proc.unit}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="text-end fw-bold mt-2">
+                        Score: <span id="displayTestProcScore"
+                                     th:text="${#numbers.formatDecimal(reportDto.testProcScore, 0, 0)}"></span>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Nominal Load</h3>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Result</th>
+                            <th>Unit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Continuous Load: <span id="displayNominalLoadContW"
+                                                       th:text="${#numbers.formatDecimal(reportDto.nominalLoadContW, 0, 0)}"></span>
+                            </td>
+                            <td>W</td>
+                        </tr>
+                        <tr>
+                            <td>Temperature Rise: <span id="displayNominalTempRiseCPerWh"
+                                                        th:text="${#numbers.formatDecimal(reportDto.nominalTempRiseCPerWh, 0, 1)}"></span>
+                            </td>
+                            <td>°C/Wh</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="text-end fw-bold mt-2">
+                        Score: <span id="displayNominalLoadScore"
+                                     th:text="${#numbers.formatDecimal(reportDto.nominalLoadScore, 0, 0)}"></span>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Battery Test (Max Power)</h3>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Result</th>
+                            <th>Unit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Available Capacity: <span id="displayBatteryTestCapacityWh"
+                                                          th:text="${#numbers.formatDecimal(reportDto.batteryTestCapacityWh, 0, 0)}"></span>
+                            </td>
+                            <td>Wh</td>
+                        </tr>
+                        <tr>
+                            <td>Battery Health: <span id="displayBatteryTestHealthPct"
+                                                      th:text="${#numbers.formatDecimal(reportDto.batteryTestHealthPct, 0, 0)} + '%'"></span>
+                            </td>
+                            <td>%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="text-end fw-bold mt-2">
+                        Score: <span id="displayBatteryTestScore"
+                                     th:text="${#numbers.formatDecimal(reportDto.batteryTestScore, 0, 0)}"></span>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Bearing Health</h3>
+                    <table class="table table-sm table-bordered" id="bearingConditionsTable">
+                        <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Result (Manual Adjustment)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="text-end fw-bold mt-2">
+                        Score: <span id="displayBearingScore"
+                                     th:text="${#numbers.formatDecimal(reportDto.bearingScore, 0, 0)}"></span>
+                        <input type="hidden" id="bearingScoreHidden"
+                               th:value="${#numbers.formatDecimal(reportDto.bearingScore, 0, 0)}"/>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Functional Operation</h3>
+                    <table class="table table-sm table-bordered" id="functionalChecksTable">
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+            <button type="submit" class="btn btn-primary btn-lg">Save Report</button>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // JSON strings from the controller
+    var visualInspectionItems = /*[[${visualInspectionItemsJson}]]*/ '[]';
+    var functionalCheckItems = /*[[${functionalCheckItemsJson}]]*/ '[]';
+
+    // Data from the Test, Ebike, Customer objects (direct access in Thymeleaf)
+    // These are already in the HTML via th:value, but if JS needs them directly,
+    // they can be pulled from the DOM or added here if not already in hidden inputs.
+    var ebikeBrand = /*[[${ebike.brand}]]*/ '';
+    var ebikeModel = /*[[${ebike.model}]]*/ '';
+    var ebikeBattery = /*[[${ebike.battery}]]*/ '';
+    var ebikeId = /*[[${ebike.id}]]*/ '';
+
+    // Values from the generated InspectionReportDto (for initial display and JS logic if needed)
+    var initialTestProcScore = /*[[${reportDto.testProcScore}]]*/ 0;
+    var initialNominalLoadContW = /*[[${reportDto.nominalLoadContW}]]*/ 0;
+    var initialNominalTempRiseCPerWh = /*[[${reportDto.nominalTempRiseCPerWh}]]*/ 0.0;
+    var initialNominalLoadScore = /*[[${reportDto.nominalLoadScore}]]*/ 0;
+    var initialBatteryTestCapacityWh = /*[[${reportDto.batteryTestCapacityWh}]]*/ 0;
+    var initialBatteryTestHealthPct = /*[[${reportDto.batteryTestHealthPct}]]*/ 0;
+    var initialBatteryTestScore = /*[[${reportDto.batteryTestScore}]]*/ 0;
+    var initialBearingScore = /*[[${reportDto.bearingScore}]]*/ 0;
+
+    // Parameters for deviation calculation in JS (from Test object)
+    var testEnginePowerMax = /*[[${test.enginePowerMax}]]*/ 0;
+    var testMaxSupport = /*[[${test.maxSupport}]]*/ 0;
+
+    /*]]>*/
+</script>
+<script type="module" th:src="@{/js/report.js}"></script>
+</body>
+</html>

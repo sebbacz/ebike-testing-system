@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:replace="~{fragments/heading :: heading (title = 'Dashboard')}"/>
+    <link rel="stylesheet" th:href="@{/css/techniciandashboard.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="technician-dashboard-container">
+    <h2>Admin Dashboard</h2>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Customers</div>
+                <div class="card-body text-center">
+                    <p>View and manage registered customers.</p>
+                    <a href="/admin/dashboard/customers" class="btn btn-outline-primary">View Customers</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Technicians</div>
+                <div class="card-body text-center">
+                    <p>View and manage technician accounts.</p>
+                    <a href="/admin/dashboard/technicians" class="btn btn-outline-primary">View Technicians</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Test Results</div>
+                <div class="card-body text-center">
+                    <p>Review test result data.</p>
+                    <a href="/admin/dashboard/results" class="btn btn-outline-primary">View Results</a>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end row -->
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Bikes</div>
+                <div class="card-body text-center">
+                    <p>Manage bike inventory and assignments.</p>
+                    <a href="/admin/dashboard/bikes" class="btn btn-outline-primary">View Bikes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Test Counts</div>
+                <div class="card-body text-center">
+                    <p>Total tests run for your company:</p>
+                    <p><strong th:text="${testCount}">0</strong></p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Error Codes</div>
+                <div class="card-body text-center">
+                    <p>See recorded error codes.</p>
+                    <a href="/admin/dashboard/errorcodes" class="btn btn-outline-primary">View Errors</a>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end row -->
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

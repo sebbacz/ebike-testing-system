@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <th:block th:replace="~{fragments/heading :: heading (title = 'E-Bike List')}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body th:attr="data-customer-id=${customer.id}" data-context="customer-ebikes">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container technician-dashboard-container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-start">E-Bike List</h2>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Bike ID</th>
+            <th>Model</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="bike : ${customer.customerBikes}">
+            <td th:text="${bike.id}"></td>
+            <td th:text="${bike.ebike != null ? bike.ebike.model : 'Unknown Model'}"></td>
+            <td>
+                <a th:href="@{/qr-code/public/{bikeId}(bikeId=${bike.id})}" class="btn btn-info">Test History</a>
+                <a th:href="@{/qr-code/qrgenerated?bikeId={bikeId}(bikeId=${bike.id})}" class="btn btn-primary">Generate QR Code</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

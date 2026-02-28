@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:replace="~{fragments/heading :: heading (title = 'Test History')}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="module" th:src="@{/js/import-test-result.js}"></script>
+</head>
+<!--<body th:data-customer-id="${customerId}">-->
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div>
+    <a href="/technician/dashboard" class="btn btn-success">View Dashboard</a>
+</div>
+
+
+<div class="container my-5">
+    <div class="text-center mb-2">
+        <h2>Import Tests</h2>
+        <p>Import a CSV file with test results.</p>
+    </div>
+
+    <div class="alert alert-success" th:if="${inProgress}">
+        <i class="bi bi-hourglass-split"></i> <strong>File upload successful!</strong> The import is in progress...
+    </div>
+
+    <form class="mx-auto my-5" id="import-issues-form" th:action="@{/import}" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="customerId" class="form-label">Customer ID</label>
+            <select class="form-select" id="customerId" name="customerId" required>
+                <option value="" disabled selected>Select model</option>
+                <option th:each="customer : ${customers}"
+                        th:value="${customer.id}"
+                        th:text="${customer.email}"> Customer Email
+                </option>
+            </select>
+
+        </div>
+
+        <div class="mb-3">
+            <label for="ebikeId" class="form-label">eBike ID</label>
+            <select class="form-select" id="ebikeId" name="ebikeId" required>
+                <option value="" selected>Select eBike</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="type" class="form-label">Test Type</label>
+<!--            <input type="text" class="form-control" id="type" name="type" required>-->
+            <select class="form-select" id="type" name="type" required>
+                <option value="" selected disabled>Select Type</option>
+                <option th:each="type : ${testTypes}"
+                        th:value="${type}"
+                        th:text="${type}"> Test Type
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="batteryCapacity" class="form-label">Battery Capacity</label>
+            <input type="number" step="0.1" class="form-control" id="batteryCapacity" name="batteryCapacity">
+        </div>
+
+        <div class="mb-3">
+            <label for="maxSupport" class="form-label">Max Support</label>
+            <input type="number" class="form-control" id="maxSupport" name="maxSupport">
+        </div>
+
+        <div class="mb-3">
+            <label for="enginePowerMax" class="form-label">Engine Power Max</label>
+            <input type="number" step="0.1" class="form-control" id="enginePowerMax" name="enginePowerMax">
+        </div>
+
+        <div class="mb-3">
+            <label for="enginePowerNominal" class="form-label">Engine Power Nominal</label>
+            <input type="number" step="0.1" class="form-control" id="enginePowerNominal" name="enginePowerNominal">
+        </div>
+
+        <div class="mb-3">
+            <label for="engineTorque" class="form-label">Engine Torque</label>
+            <input type="number" step="0.1" class="form-control" id="engineTorque" name="engineTorque">
+        </div>
+
+        <div class="mb-3">
+            <label for="testCsv" class="form-label">Select a CSV file to upload</label>
+            <input class="form-control" type="file" name="testCsv" id="testCsv" required/>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Test & Import CSV</button>
+    </form>
+
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

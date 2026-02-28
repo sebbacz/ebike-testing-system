@@ -1,0 +1,31 @@
+.navbar {
+    background-color: black !important;
+    font-family: 'Red Hat Display', sans-serif !important; /* Force font-family on navbar */
+}
+
+.navbar-brand img {
+    height: 30px;
+    width: auto;
+}
+
+.navbar-collapse {
+    display: flex;
+    justify-content: center;
+}
+
+.navbar-nav {
+    display: flex;
+    gap: 30px;
+    margin-left: -250px;
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+/* Add this to ensure font is applied to all navbar links */
+.navbar-nav .nav-link, .navbar-brand, .navbar-toggler {
+    font-family: 'Red Hat Display', sans-serif !important;
+}

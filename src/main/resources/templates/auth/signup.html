@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <th:block th:replace="~{fragments/heading :: heading (title = 'Sign Up')}"/>
+</head>
+<body>
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<!-- Sign Up Form -->
+<!-- ... head and navbar remain unchanged ... -->
+
+<!-- Sign Up Form -->
+<div class="container form-container">
+  <h2 class="text-center">Create an Account</h2>
+  <form th:action="@{/auth/process_signup}" method="post" onsubmit="return validatePasswords()">
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" id="email" name="email" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label for="fullName" class="form-label">Full Name</label>
+      <input type="text" id="fullName" name="fullName" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" id="password" name="password" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label for="confirmPassword" class="form-label">Confirm Password</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+      <div class="invalid-feedback" id="passwordError"></div>
+    </div>
+
+    <!-- Role selection -->
+    <div class="mb-3">
+      <label for="role" class="form-label">Select Role</label>
+      <select id="role" name="role" class="form-select" required onchange="toggleCompanyField()">
+        <option value="">Select Role</option>
+        <option value="CUSTOMER">Customer</option>
+        <option value="TECHNICIAN">Technician</option>
+        <option value="ADMIN">Admin</option>
+      </select>
+    </div>
+
+    <!-- Company input for Admins -->
+    <div class="mb-3" id="companyTextDiv" style="display: none;">
+      <label for="companyText" class="form-label">Company Name</label>
+      <input type="text" id="companyText" name="companyName" class="form-control">
+    </div>
+
+    <!-- Company dropdown for Customers -->
+    <div class="mb-3" id="companyDropdownDiv" style="display: none;">
+      <label for="companyDropdown" class="form-label">Select Company</label>
+      <select id="companyDropdown" name="companyName" class="form-select">
+        <option value="">None</option>
+        <option th:each="company : ${companyList}" th:value="${company}" th:text="${company}"></option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-light w-100">Sign Up</button>
+  </form>
+
+  <p class="text-center mt-3">
+    Already have an account? <a th:href="@{/auth/login}" class="text-black">Log in</a>
+  </p>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap JS -->
+<script>
+  function validatePasswords() {
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirmPassword");
+    const error = document.getElementById("passwordError");
+
+    if (password.value !== confirmPassword.value) {
+      error.textContent = "Passwords do not match.";
+      confirmPassword.classList.add("is-invalid");
+      return false;
+    } else {
+      error.textContent = "";
+      confirmPassword.classList.remove("is-invalid");
+      return true;
+    }
+  }
+
+  function toggleCompanyField() {
+    const role = document.getElementById("role").value;
+    const textDiv = document.getElementById("companyTextDiv");
+    const dropdownDiv = document.getElementById("companyDropdownDiv");
+    const companyText = document.getElementById("companyText");
+    const companyDropdown = document.getElementById("companyDropdown");
+
+    if (role === "ADMIN") {
+      textDiv.style.display = "block";
+      dropdownDiv.style.display = "none";
+      companyText.disabled = false;
+      companyDropdown.disabled = true;
+    } else if (role === "CUSTOMER") {
+      textDiv.style.display = "none";
+      dropdownDiv.style.display = "block";
+      companyText.disabled = true;
+      companyDropdown.disabled = false;
+    } else {
+      textDiv.style.display = "none";
+      dropdownDiv.style.display = "none";
+      companyText.disabled = true;
+      companyDropdown.disabled = true;
+    }
+  }
+</script>

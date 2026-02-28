@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:replace="~{fragments/heading :: heading (title = 'Test History')}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="module" th:src="@{/js/tests.js}"></script>
+</head>
+<!--<body th:data-customer-id="${customerId}">-->
+<body
+        th:attr="data-customer-id=${customerId} ? ${customerId} : null">
+
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:if="${#authorization.expression('hasRole(''TECHNICIAN'')')}">
+    <a href="/technician/dashboard" class="btn btn-success">View Dashboard</a>
+</div>
+
+
+<div class="container my-5">
+    <div class="text-center mb-4">
+        <h2>Tests</h2>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-dark text-center">
+                            <tr>
+                                <th>ID</th>
+                                <th>eBike Id</th>
+                                <th>Status</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Type</th>
+                                <th>Technician</th>
+                                <th>Customer</th>
+                                <th>Notes</th>
+                                <th>Results</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="test-table-body">
+                            <!-- JS will populate rows here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Test Details Modal -->
+<div class="modal fade" id="testDetailsModal" tabindex="-1" aria-labelledby="testDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="testDetailsModalLabel">Test Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <table class="table table-bordered align-middle mb-0">
+                        <tbody id="testDetailsBody">
+                        <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mb-3">
+                    <label for="testNotesTextarea" class="form-label">Edit Notes</label>
+                    <textarea class="form-control" id="testNotesTextarea" rows="4"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer"
+                 th:attr="hidden=${!#authorization.expression('hasRole(''TECHNICIAN'')')}">
+                <button type="button" id="saveNotesBtn" class="btn btn-primary">Save Notes</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

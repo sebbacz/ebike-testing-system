@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:replace="~{fragments/heading :: heading (title = 'eBikes')}"/>
+  <link rel="stylesheet" th:href="@{/css/techniciandashboard.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="technician-dashboard-container">
+  <h2>Bikes</h2>
+  <div class="card admin-table-bikes">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Brand</th>
+        <th>Model</th>
+        <th>Battery</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="bike : ${bikes}">
+        <td th:text="${bike.id}"></td>
+        <td th:text="${bike.brand}"></td>
+        <td th:text="${bike.model}"></td>
+        <td th:text="${bike.battery}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

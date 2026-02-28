@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:replace="~{fragments/heading :: heading (title = 'eBike Models')}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="module" th:src="@{/js/models.js}"></script>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div>
+    <a href="/technician/dashboard" class="btn btn-success me-3">View Dashboard</a>
+</div>
+
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>eBike Models</h2>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addBikeModel">
+            + Add Model
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Battery Cap.</th>
+                    <th>Max Support</th>
+                    <th>Power Max</th>
+                    <th>Power Nom.</th>
+                    <th>Torque</th>
+                    <th>eBikes</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="model-table-body">
+                <!-- JS will populate rows here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add/Edit Model Modal -->
+<div class="modal fade" id="addBikeModel" tabindex="-1" aria-labelledby="addBikeModelLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="add-ebike-model-form" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBikeModelLabel">Add New eBike Model</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Hidden input to track edit model ID -->
+            <input type="hidden" id="editModelId" name="editModelId" value="">
+
+
+            <div class="modal-body row g-3">
+                <div class="col-md-6"><label class="form-label">Name</label><input id="name" class="form-control" required></div>
+                <div class="col-md-6"><label class="form-label">Battery (Wh)</label><input id="batteryCapacity" type="number" class="form-control" required></div>
+                <div class="col-md-6"><label class="form-label">Max Support (Kg)</label><input id="maxSupport" type="number" class="form-control" required></div>
+                <div class="col-md-6"><label class="form-label">Power Max (W)</label><input id="enginePowerMax" type="number" class="form-control" required></div>
+                <div class="col-md-6"><label class="form-label">Power Nom. (W)</label><input id="enginePowerNominal" type="number" class="form-control" required></div>
+                <div class="col-md-6"><label class="form-label">Torque (Nm)</label><input id="engineTorque" type="number" class="form-control" required></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success" id="model-submit-btn">Add Model</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

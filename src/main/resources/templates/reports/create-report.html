@@ -1,0 +1,2349 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Inspection Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <style>
+        /* section headers */
+        .section {
+            border: 1px solid #dee2e6;
+            margin-bottom: 1rem;
+        }
+        .section > .section-header {
+            background: #f8f9fa;
+            padding: .5rem;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+        }
+        .section table {
+            margin-bottom: 0;
+        }
+        /* checkbox‐cells */
+        .state-cell { text-align: center; vertical-align: middle; }
+        .state-cell--   { background: #f8d7da; }  /* -- */
+        .state-cell-    { background: #fff3cd; }  /* -  */
+        .state-cell0    { background: transparent;}/* 0  */
+        .state-cell\+   { background: #d1ecf1; }  /* +  */
+        .state-cell\+\+ { background: #d4edda; }  /* ++ */
+        .state-cell-nvt { background: #e2e3e5; }  /* n/a */
+    </style>
+</head>
+
+<body class="p-4">
+<!-- create-report.html, near the very top of the <body> -->
+<!--<pre>-->
+<!--  Brand:             <span th:text="${report.brand}">[null]</span>-->
+<!--  Type:              <span th:text="${report.type}">[null]</span>-->
+<!--  FrameNumber:       <span th:text="${report.frameNumber}">[null]</span>-->
+<!--  FirstRegistration: <span th:text="${report.firstRegistration}">[null]</span>-->
+<!--  Size:              <span th:text="${report.size}">[null]</span>-->
+<!--  KmPosition:        <span th:text="${report.kmPosition}">[null]</span>-->
+<!--  GearType:          <span th:text="${report.gearType}">[null]</span>-->
+
+<!--  ReportId:          <span th:text="${report.reportId}">[null]</span>-->
+<!--  CustomerBikeId:    <span th:text="${report.customerBikeId}">[null]</span>-->
+
+<!--  Comment:           <span th:text="${report.comment}">[null]</span>-->
+
+<!--  Engine:            <span th:text="${report.engine}">[null]</span>-->
+<!--  Drive:             <span th:text="${report.drive}">[null]</span>-->
+
+<!--  BatteryCapacityWh: <span th:text="${report.batteryCapacityWh}">[null]</span>-->
+<!--  MaxSupportPct:     <span th:text="${report.maxSupportPct}">[null]</span>-->
+<!--  EnginePowerMaxW:   <span th:text="${report.enginePowerMaxW}">[null]</span>-->
+<!--  EnginePowerNomW:   <span th:text="${report.enginePowerNomW}">[null]</span>-->
+<!--  EngineTorqueNm:    <span th:text="${report.engineTorqueNm}">[null]</span>-->
+
+<!--  TestProcScore:     <span th:text="${report.testProcScore}">[null]</span>-->
+<!--  NominalLoadContW:  <span th:text="${report.nominalLoadContW}">[null]</span>-->
+<!--  NominalTempRiseCPerWh: <span th:text="${report.nominalTempRiseCPerWh}">[null]</span>-->
+<!--  NominalLoadScore:  <span th:text="${report.nominalLoadScore}">[null]</span>-->
+<!--  BatteryTestCapacityWh: <span th:text="${report.batteryTestCapacityWh}">[null]</span>-->
+<!--  BatteryTestHealthPct:  <span th:text="${report.batteryTestHealthPct}">[null]</span>-->
+<!--  BatteryTestScore:      <span th:text="${report.batteryTestScore}">[null]</span>-->
+<!--  BearingScore:     <span th:text="${report.bearingScore}">[null]</span>-->
+
+<!--  VisualInspection (count):  <span th:text="${#lists.size(reportDto.visualInspection)}">[null]</span>-->
+<!--  TestProcedures  (count):   <span th:text="${#lists.size(reportDto.testProcedures)}">[null]</span>-->
+<!--  BearingConditions(count):  <span th:text="${#lists.size(reportDto.bearingConditions)}">[null]</span>-->
+<!--  FunctionalChecks (count):  <span th:text="${#lists.size(reportDto.functionalChecks)}">[null]</span>-->
+<!--</pre>-->
+
+
+<div class="container-fluid">
+    <form th:action="@{/technician/customers/{customerId}/bikes/{custBikeId}/reports/create/{testUuid}(
+                       customerId=${customerId},custBikeId=${custBikeId},testUuid=${testUuid})}"
+          th:object="${report}"
+          method="post">
+
+        <input type="hidden" th:field="*{customerBikeId}" />
+
+
+        <div class="row mb-4">
+        <div class="col">
+            <h2>Inspection Report</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+
+            <div class="section">
+                <div class="section-header">Identification</div>
+                <table class="table table-sm mb-0">
+                    <tr><th>Brand</th>              <td th:text="${report.brand}"/></tr>
+                    <tr><th>Type</th>               <td th:text="${report.type}"/></tr>
+                    <tr><th>Frame number</th>       <td th:text="${report.frameNumber}"/></tr>
+                    <tr><th>First registration</th> <td th:text="${report.firstRegistration}"/></tr>
+                    <tr><th>Size</th>               <td th:text="${report.size}"/></tr>
+                    <tr><th>Kilometer reading</th>  <td th:text="${report.kmPosition}"/></tr>
+                    <tr><th>Gear type</th>          <td th:text="${report.gearType}"/></tr>
+                </table>
+            </div>
+
+            <!-- Visual Inspection Checklist with Accessible Labels -->
+            <div class="section">
+                <div class="section-header">Visual inspection</div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm mb-0" aria-label="Visual Inspection Checklist">
+                        <caption class="visually-hidden">Visual Inspection Checklist</caption>
+                        <thead class="table-light">
+                        <tr>
+                            <th>Element</th>
+                            <th class="state-cell">--</th>
+                            <th class="state-cell">-</th>
+                            <th class="state-cell">0</th>
+                            <th class="state-cell">+</th>
+                            <th class="state-cell">++</th>
+                            <th class="state-cell">n/a</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- 0: Tires -->
+                        <tr>
+                            <th scope="row">Tires</th>
+                            <!-- “--” / Very bad -->
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[0].state}"
+                                        id="vi-0-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-0-verybad">
+                                    Tires, Very bad
+                                </label>
+                            </td>
+                            <!-- “-” / Bad -->
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[0].state}"
+                                        id="vi-0-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-0-bad">
+                                    Tires, Bad
+                                </label>
+                            </td>
+                            <!-- “0” / Neutral -->
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[0].state}"
+                                        id="vi-0-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-0-neutral">
+                                    Tires, Neutral
+                                </label>
+                            </td>
+                            <!-- “+” / Good -->
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[0].state}"
+                                        id="vi-0-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-0-good">
+                                    Tires, Good
+                                </label>
+                            </td>
+                            <!-- “++” / As good as new -->
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[0].state}"
+                                        id="vi-0-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-0-asnew">
+                                    Tires, As good as new
+                                </label>
+                            </td>
+                            <!-- “nvt” / Not applicable -->
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[0].state}"
+                                        id="vi-0-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-0-nvt">
+                                    Tires, Not applicable
+                                </label>
+                            </td>
+                            <!-- Hidden label field for the model -->
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[0].label}"
+                                    th:value="'Tires'"
+                            />
+                        </tr>
+
+                        <!-- 1: Bell -->
+                        <tr>
+                            <th scope="row">Bell</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[1].state}"
+                                        id="vi-1-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-1-verybad">
+                                    Bell, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[1].state}"
+                                        id="vi-1-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-1-bad">
+                                    Bell, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[1].state}"
+                                        id="vi-1-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-1-neutral">
+                                    Bell, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[1].state}"
+                                        id="vi-1-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-1-good">
+                                    Bell, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[1].state}"
+                                        id="vi-1-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-1-asnew">
+                                    Bell, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[1].state}"
+                                        id="vi-1-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-1-nvt">
+                                    Bell, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[1].label}"
+                                    th:value="'Bell'"
+                            />
+                        </tr>
+
+                        <!-- 2: Cranks -->
+                        <tr>
+                            <th scope="row">Cranks</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[2].state}"
+                                        id="vi-2-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-2-verybad">
+                                    Cranks, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[2].state}"
+                                        id="vi-2-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-2-bad">
+                                    Cranks, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[2].state}"
+                                        id="vi-2-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-2-neutral">
+                                    Cranks, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[2].state}"
+                                        id="vi-2-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-2-good">
+                                    Cranks, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[2].state}"
+                                        id="vi-2-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-2-asnew">
+                                    Cranks, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[2].state}"
+                                        id="vi-2-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-2-nvt">
+                                    Cranks, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[2].label}"
+                                    th:value="'Cranks'"
+                            />
+                        </tr>
+
+                        <!-- 3: Electric cabling -->
+                        <tr>
+                            <th scope="row">Electric cabling</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[3].state}"
+                                        id="vi-3-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-3-verybad">
+                                    Electric cabling, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[3].state}"
+                                        id="vi-3-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-3-bad">
+                                    Electric cabling, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[3].state}"
+                                        id="vi-3-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-3-neutral">
+                                    Electric cabling, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[3].state}"
+                                        id="vi-3-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-3-good">
+                                    Electric cabling, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[3].state}"
+                                        id="vi-3-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-3-asnew">
+                                    Electric cabling, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[3].state}"
+                                        id="vi-3-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-3-nvt">
+                                    Electric cabling, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[3].label}"
+                                    th:value="'Electric cabling'"
+                            />
+                        </tr>
+
+                        <!-- 4: Frame/Front fork -->
+                        <tr>
+                            <th scope="row">Frame/Front fork</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[4].state}"
+                                        id="vi-4-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-4-verybad">
+                                    Frame/Front fork, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[4].state}"
+                                        id="vi-4-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-4-bad">
+                                    Frame/Front fork, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[4].state}"
+                                        id="vi-4-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-4-neutral">
+                                    Frame/Front fork, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[4].state}"
+                                        id="vi-4-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-4-good">
+                                    Frame/Front fork, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[4].state}"
+                                        id="vi-4-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-4-asnew">
+                                    Frame/Front fork, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[4].state}"
+                                        id="vi-4-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-4-nvt">
+                                    Frame/Front fork, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[4].label}"
+                                    th:value="'Frame/Front fork'"
+                            />
+                        </tr>
+
+                        <!-- 5: Handles -->
+                        <tr>
+                            <th scope="row">Handles</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[5].state}"
+                                        id="vi-5-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-5-verybad">
+                                    Handles, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[5].state}"
+                                        id="vi-5-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-5-bad">
+                                    Handles, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[5].state}"
+                                        id="vi-5-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-5-neutral">
+                                    Handles, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[5].state}"
+                                        id="vi-5-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-5-good">
+                                    Handles, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[5].state}"
+                                        id="vi-5-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-5-asnew">
+                                    Handles, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[5].state}"
+                                        id="vi-5-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-5-nvt">
+                                    Handles, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[5].label}"
+                                    th:value="'Handles'"
+                            />
+                        </tr>
+
+                        <!-- 6: Chane -->
+                        <tr>
+                            <th scope="row">Chane</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[6].state}"
+                                        id="vi-6-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-6-verybad">
+                                    Chane, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[6].state}"
+                                        id="vi-6-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-6-bad">
+                                    Chane, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[6].state}"
+                                        id="vi-6-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-6-neutral">
+                                    Chane, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[6].state}"
+                                        id="vi-6-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-6-good">
+                                    Chane, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[6].state}"
+                                        id="vi-6-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-6-asnew">
+                                    Chane, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[6].state}"
+                                        id="vi-6-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-6-nvt">
+                                    Chane, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[6].label}"
+                                    th:value="'Chane'"
+                            />
+                        </tr>
+
+                        <!-- 7: Pedals -->
+                        <tr>
+                            <th scope="row">Pedals</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[7].state}"
+                                        id="vi-7-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-7-verybad">
+                                    Pedals, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[7].state}"
+                                        id="vi-7-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-7-bad">
+                                    Pedals, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[7].state}"
+                                        id="vi-7-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-7-neutral">
+                                    Pedals, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[7].state}"
+                                        id="vi-7-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-7-good">
+                                    Pedals, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[7].state}"
+                                        id="vi-7-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-7-asnew">
+                                    Pedals, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[7].state}"
+                                        id="vi-7-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-7-nvt">
+                                    Pedals, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[7].label}"
+                                    th:value="'Pedals'"
+                            />
+                        </tr>
+
+                        <!-- 8: Reflectors -->
+                        <tr>
+                            <th scope="row">Reflectors</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[8].state}"
+                                        id="vi-8-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-8-verybad">
+                                    Reflectors, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[8].state}"
+                                        id="vi-8-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-8-bad">
+                                    Reflectors, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[8].state}"
+                                        id="vi-8-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-8-neutral">
+                                    Reflectors, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[8].state}"
+                                        id="vi-8-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-8-good">
+                                    Reflectors, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[8].state}"
+                                        id="vi-8-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-8-asnew">
+                                    Reflectors, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[8].state}"
+                                        id="vi-8-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-8-nvt">
+                                    Reflectors, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[8].label}"
+                                    th:value="'Reflectors'"
+                            />
+                        </tr>
+
+                        <!-- 9: Brake pads -->
+                        <tr>
+                            <th scope="row">Brake pads</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[9].state}"
+                                        id="vi-9-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-9-verybad">
+                                    Brake pads, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[9].state}"
+                                        id="vi-9-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-9-bad">
+                                    Brake pads, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[9].state}"
+                                        id="vi-9-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-9-neutral">
+                                    Brake pads, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[9].state}"
+                                        id="vi-9-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-9-good">
+                                    Brake pads, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[9].state}"
+                                        id="vi-9-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-9-asnew">
+                                    Brake pads, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[9].state}"
+                                        id="vi-9-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-9-nvt">
+                                    Brake pads, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[9].label}"
+                                    th:value="'Brake pads'"
+                            />
+                        </tr>
+
+                        <!-- 10: Brake levers -->
+                        <tr>
+                            <th scope="row">Brake levers</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[10].state}"
+                                        id="vi-10-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-10-verybad">
+                                    Brake levers, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[10].state}"
+                                        id="vi-10-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-10-bad">
+                                    Brake levers, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[10].state}"
+                                        id="vi-10-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-10-neutral">
+                                    Brake levers, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[10].state}"
+                                        id="vi-10-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-10-good">
+                                    Brake levers, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[10].state}"
+                                        id="vi-10-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-10-asnew">
+                                    Brake levers, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[10].state}"
+                                        id="vi-10-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-10-nvt">
+                                    Brake levers, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[10].label}"
+                                    th:value="'Brake levers'"
+                            />
+                        </tr>
+
+                        <!-- 11: Brake cables -->
+                        <tr>
+                            <th scope="row">Brake cables</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[11].state}"
+                                        id="vi-11-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-11-verybad">
+                                    Brake cables, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[11].state}"
+                                        id="vi-11-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-11-bad">
+                                    Brake cables, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[11].state}"
+                                        id="vi-11-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-11-neutral">
+                                    Brake cables, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[11].state}"
+                                        id="vi-11-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-11-good">
+                                    Brake cables, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[11].state}"
+                                        id="vi-11-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-11-asnew">
+                                    Brake cables, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[11].state}"
+                                        id="vi-11-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-11-nvt">
+                                    Brake cables, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[11].label}"
+                                    th:value="'Brake cables'"
+                            />
+                        </tr>
+
+                        <!-- 12: Brake discs -->
+                        <tr>
+                            <th scope="row">Brake discs</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[12].state}"
+                                        id="vi-12-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-12-verybad">
+                                    Brake discs, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[12].state}"
+                                        id="vi-12-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-12-bad">
+                                    Brake discs, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[12].state}"
+                                        id="vi-12-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-12-neutral">
+                                    Brake discs, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[12].state}"
+                                        id="vi-12-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-12-good">
+                                    Brake discs, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[12].state}"
+                                        id="vi-12-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-12-asnew">
+                                    Brake discs, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[12].state}"
+                                        id="vi-12-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-12-nvt">
+                                    Brake discs, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[12].label}"
+                                    th:value="'Brake discs'"
+                            />
+                        </tr>
+
+                        <!-- 13: Mudguards -->
+                        <tr>
+                            <th scope="row">Mudguards</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[13].state}"
+                                        id="vi-13-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-13-verybad">
+                                    Mudguards, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[13].state}"
+                                        id="vi-13-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-13-bad">
+                                    Mudguards, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[13].state}"
+                                        id="vi-13-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-13-neutral">
+                                    Mudguards, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[13].state}"
+                                        id="vi-13-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-13-good">
+                                    Mudguards, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[13].state}"
+                                        id="vi-13-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-13-asnew">
+                                    Mudguards, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[13].state}"
+                                        id="vi-13-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-13-nvt">
+                                    Mudguards, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[13].label}"
+                                    th:value="'Mudguards'"
+                            />
+                        </tr>
+
+                        <!-- 14: Handlebar/Stem -->
+                        <tr>
+                            <th scope="row">Handlebar/Stem</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[14].state}"
+                                        id="vi-14-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-14-verybad">
+                                    Handlebar/Stem, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[14].state}"
+                                        id="vi-14-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-14-bad">
+                                    Handlebar/Stem, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[14].state}"
+                                        id="vi-14-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-14-neutral">
+                                    Handlebar/Stem, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[14].state}"
+                                        id="vi-14-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-14-good">
+                                    Handlebar/Stem, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[14].state}"
+                                        id="vi-14-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-14-asnew">
+                                    Handlebar/Stem, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[14].state}"
+                                        id="vi-14-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-14-nvt">
+                                    Handlebar/Stem, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[14].label}"
+                                    th:value="'Handlebar/Stem'"
+                            />
+                        </tr>
+
+                        <!-- 15: Rear sprocket -->
+                        <tr>
+                            <th scope="row">Rear sprocket</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[15].state}"
+                                        id="vi-15-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-15-verybad">
+                                    Rear sprocket, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[15].state}"
+                                        id="vi-15-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-15-bad">
+                                    Rear sprocket, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[15].state}"
+                                        id="vi-15-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-15-neutral">
+                                    Rear sprocket, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[15].state}"
+                                        id="vi-15-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-15-good">
+                                    Rear sprocket, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[15].state}"
+                                        id="vi-15-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-15-asnew">
+                                    Rear sprocket, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[15].state}"
+                                        id="vi-15-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-15-nvt">
+                                    Rear sprocket, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[15].label}"
+                                    th:value="'Rear sprocket'"
+                            />
+                        </tr>
+
+                        <!-- 16: Front sprocket -->
+                        <tr>
+                            <th scope="row">Front sprocket</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[16].state}"
+                                        id="vi-16-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-16-verybad">
+                                    Front sprocket, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[16].state}"
+                                        id="vi-16-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-16-bad">
+                                    Front sprocket, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[16].state}"
+                                        id="vi-16-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-16-neutral">
+                                    Front sprocket, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[16].state}"
+                                        id="vi-16-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-16-good">
+                                    Front sprocket, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[16].state}"
+                                        id="vi-16-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-16-asnew">
+                                    Front sprocket, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[16].state}"
+                                        id="vi-16-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-16-nvt">
+                                    Front sprocket, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[16].label}"
+                                    th:value="'Front sprocket'"
+                            />
+                        </tr>
+
+                        <!-- 17: Rims -->
+                        <tr>
+                            <th scope="row">Rims</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[17].state}"
+                                        id="vi-17-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-17-verybad">
+                                    Rims, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[17].state}"
+                                        id="vi-17-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-17-bad">
+                                    Rims, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[17].state}"
+                                        id="vi-17-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-17-neutral">
+                                    Rims, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[17].state}"
+                                        id="vi-17-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-17-good">
+                                    Rims, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[17].state}"
+                                        id="vi-17-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-17-asnew">
+                                    Rims, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[17].state}"
+                                        id="vi-17-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-17-nvt">
+                                    Rims, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[17].label}"
+                                    th:value="'Rims'"
+                            />
+                        </tr>
+
+                        <!-- 18: Spokes -->
+                        <tr>
+                            <th scope="row">Spokes</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[18].state}"
+                                        id="vi-18-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-18-verybad">
+                                    Spokes, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[18].state}"
+                                        id="vi-18-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-18-bad">
+                                    Spokes, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[18].state}"
+                                        id="vi-18-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-18-neutral">
+                                    Spokes, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[18].state}"
+                                        id="vi-18-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-18-good">
+                                    Spokes, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[18].state}"
+                                        id="vi-18-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-18-asnew">
+                                    Spokes, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[18].state}"
+                                        id="vi-18-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-18-nvt">
+                                    Spokes, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[18].label}"
+                                    th:value="'Spokes'"
+                            />
+                        </tr>
+
+                        <!-- 19: Rear suspension -->
+                        <tr>
+                            <th scope="row">Rear suspension</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[19].state}"
+                                        id="vi-19-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-19-verybad">
+                                    Rear suspension, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[19].state}"
+                                        id="vi-19-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-19-bad">
+                                    Rear suspension, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[19].state}"
+                                        id="vi-19-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-19-neutral">
+                                    Rear suspension, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[19].state}"
+                                        id="vi-19-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-19-good">
+                                    Rear suspension, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[19].state}"
+                                        id="vi-19-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-19-asnew">
+                                    Rear suspension, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[19].state}"
+                                        id="vi-19-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-19-nvt">
+                                    Rear suspension, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[19].label}"
+                                    th:value="'Rear suspension'"
+                            />
+                        </tr>
+
+                        <!-- 20: Front suspension -->
+                        <tr>
+                            <th scope="row">Front suspension</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[20].state}"
+                                        id="vi-20-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-20-verybad">
+                                    Front suspension, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[20].state}"
+                                        id="vi-20-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-20-bad">
+                                    Front suspension, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[20].state}"
+                                        id="vi-20-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-20-neutral">
+                                    Front suspension, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[20].state}"
+                                        id="vi-20-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-20-good">
+                                    Front suspension, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[20].state}"
+                                        id="vi-20-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-20-asnew">
+                                    Front suspension, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[20].state}"
+                                        id="vi-20-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-20-nvt">
+                                    Front suspension, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[20].label}"
+                                    th:value="'Front suspension'"
+                            />
+                        </tr>
+
+                        <!-- 21: Saddle -->
+                        <tr>
+                            <th scope="row">Saddle</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[21].state}"
+                                        id="vi-21-verybad"
+                                        value="--"
+                                />
+                                <label class="visually-hidden" for="vi-21-verybad">
+                                    Saddle, Very bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[21].state}"
+                                        id="vi-21-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="vi-21-bad">
+                                    Saddle, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[21].state}"
+                                        id="vi-21-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="vi-21-neutral">
+                                    Saddle, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[21].state}"
+                                        id="vi-21-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="vi-21-good">
+                                    Saddle, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[21].state}"
+                                        id="vi-21-asnew"
+                                        value="++"
+                                />
+                                <label class="visually-hidden" for="vi-21-asnew">
+                                    Saddle, As good as new
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{visualInspection[21].state}"
+                                        id="vi-21-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="vi-21-nvt">
+                                    Saddle, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{visualInspection[21].label}"
+                                    th:value="'Saddle'"
+                            />
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <div class="section-header">Legend</div>
+                <table class="table table-sm mb-0">
+                    <tr><td><span class="state-cell state-cell--">--</span></td><td>Very bad, must be replaced</td></tr>
+                    <tr><td><span class="state-cell state-cell-">-</span></td><td>Bad, replace in the future</td></tr>
+                    <tr><td><span class="state-cell state-cell0">0</span></td><td>Neutral</td></tr>
+                    <tr><td><span class="state-cell state-cell\+">+</span></td><td>Good condition with signs of use</td></tr>
+                    <tr><td><span class="state-cell state-cell\+\+">++</span></td><td>As good as new</td></tr>
+                    <tr><td><span class="state-cell state-cell-nvt">n/a</span></td><td>Not applicable</td></tr>
+                </table>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Comment</div>
+                <label>
+<textarea class="form-control"
+          th:field="*{comment}"
+          placeholder="Enter any overall remarks…"></textarea>
+                </label></div>
+
+        </div>
+
+        <div class="col-md-8">
+
+            <div class="section">
+                <div class="section-header">Engine info</div>
+                <table class="table table-sm mb-0">
+                    <tr><th>Engine</th>               <td th:text="${report.engine}"/></tr>
+                    <tr><th>Drive</th>                <td th:text="${report.drive}"/></tr>
+                    <tr><th>Battery capacity</th>     <td th:text="${report.batteryCapacityWh} + ' Wh'"/> <input type="hidden" th:field="*{batteryCapacityWh}"/></tr>
+                    <tr><th>Max support</th>          <td th:text="${report.maxSupportPct} + '%'"/> <input type="hidden" th:field="*{maxSupportPct}"/></tr>
+                    <tr><th>Engine power (max)</th>   <td th:text="${report.enginePowerMaxW} + ' W'"/> <input type="hidden" th:field="*{enginePowerMaxW}"/></tr>
+                    <tr><th>Engine power (nom.)</th>  <td th:text="${report.enginePowerNomW} + ' W'"/> <input type="hidden" th:field="*{enginePowerNomW}"/></tr>
+                    <tr><th>Engine torque</th>        <td th:text="${report.engineTorqueNm} + ' Nm'"/> <input type="hidden" th:field="*{engineTorqueNm}"/></tr>
+                </table>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Test Procedures Overview</div>
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                    <tr><th>Test</th><th>Result</th><th>Deviation</th><th>Unit</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p, iterStat : *{testProcedures}">
+                        <!-- Display values -->
+                        <td th:text="${p.name}">–</td>
+                        <td th:text="${p.result}">0.0</td>
+                        <td th:text="${p.deviationPct} + '%'">0%</td>
+                        <td th:text="${p.unit}">–</td>
+
+                        <!-- Hidden inputs to rebind into report.testProcedures[index] -->
+                        <input type="hidden"
+                               th:field="*{testProcedures[__${iterStat.index}__].name}"/>
+                        <input type="hidden"
+                               th:field="*{testProcedures[__${iterStat.index}__].result}"/>
+                        <input type="hidden"
+                               th:field="*{testProcedures[__${iterStat.index}__].deviationPct}"/>
+                        <input type="hidden"
+                               th:field="*{testProcedures[__${iterStat.index}__].unit}"/>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="px-2 py-1 text-end">
+                    <strong>Score:</strong> <span th:text="${report.testProcScore}">0</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Nominal Load Test</div>
+                <table class="table table-sm mb-0">
+                    <tr><th>Continuous load</th>
+                        <td th:text="${report.nominalLoadContW} + ' W'">0 W</td> <input type="hidden" th:field="*{nominalLoadContW}"/></tr>
+                    <tr><th>Temperature increase</th>
+                        <td th:text="${report.nominalTempRiseCPerWh} + ' °C/Wh'">0 °C/Wh</td> <input type="hidden" th:field="*{nominalTempRiseCPerWh}"/></tr>
+                </table>
+                <div class="px-2 py-1 text-end">
+                    <strong>Score:</strong> <span th:text="${report.nominalLoadScore}">–</span>
+                    <input type="hidden" th:field="*{nominalLoadScore}"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="section">
+                        <div class="section-header">Battery test (max power)</div>
+                        <table class="table table-sm mb-0">
+                            <tr><th>Available capacity</th>
+                                <td th:text="${report.batteryTestCapacityWh} + ' Wh'">0 Wh</td> <input type="hidden" th:field="*{batteryCapacityWh}"/></tr>
+                            <tr><th>Battery health</th>
+                                <td th:text="${report.batteryTestHealthPct} + '%'">0%</td> <input type="hidden" th:field="*{batteryTestHealthPct}"/></tr>
+                        </table>
+                        <div class="px-2 py-1 text-end">
+                            <strong>Score:</strong> <span th:text="${report.batteryTestScore}">0</span>
+                            <input type="hidden" th:field="*{batteryTestScore}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="section">
+                        <div class="section-header">Bearing condition</div>
+                        <table class="table table-sm mb-0">
+                            <tbody>
+                            <tr th:each="b, iterStat : *{bearingConditions}">
+                                <!-- Displayed cells -->
+                                <th th:text="${b.name}">—</th>
+                                <td th:text="${b.value}">0</td>
+
+                                <!-- Hidden inputs wrapped in a “ghost” cell for valid HTML -->
+                                <td style="display: none;">
+                                    <input type="hidden"
+                                           th:field="*{bearingConditions[__${iterStat.index}__].name}" />
+                                    <input type="hidden"
+                                           th:field="*{bearingConditions[__${iterStat.index}__].value}" />
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="px-2 py-1 text-end">
+                        <strong>Score:</strong> <span th:text="${report.bearingScore}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Functional operation</div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm mb-0" aria-label="Functional Operation Checklist">
+                        <caption class="visually-hidden">Functional Operation Checklist</caption>
+                        <thead class="table-light">
+                        <tr>
+                            <th>Element</th>
+                            <th class="state-cell">-</th>
+                            <th class="state-cell">0</th>
+                            <th class="state-cell">+</th>
+                            <th class="state-cell">n/a</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- 0: Tail light -->
+                        <tr>
+                            <th scope="row">Tail light</th>
+                            <!-- “-” / Bad -->
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[0].state}"
+                                        id="fo-0-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="fo-0-bad">
+                                    Tail light, Bad
+                                </label>
+                            </td>
+                            <!-- “0” / Neutral -->
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[0].state}"
+                                        id="fo-0-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="fo-0-neutral">
+                                    Tail light, Neutral
+                                </label>
+                            </td>
+                            <!-- “+” / Good -->
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[0].state}"
+                                        id="fo-0-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="fo-0-good">
+                                    Tail light, Good
+                                </label>
+                            </td>
+                            <!-- “nvt” / Not applicable -->
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[0].state}"
+                                        id="fo-0-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="fo-0-nvt">
+                                    Tail light, Not applicable
+                                </label>
+                            </td>
+                            <!-- Hidden label field for the model -->
+                            <input
+                                    type="hidden"
+                                    th:field="*{functionalChecks[0].label}"
+                                    th:value="'Tail light'"
+                            />
+                        </tr>
+
+                        <!-- 1: Rear brake -->
+                        <tr>
+                            <th scope="row">Rear brake</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[1].state}"
+                                        id="fo-1-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="fo-1-bad">
+                                    Rear brake, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[1].state}"
+                                        id="fo-1-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="fo-1-neutral">
+                                    Rear brake, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[1].state}"
+                                        id="fo-1-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="fo-1-good">
+                                    Rear brake, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[1].state}"
+                                        id="fo-1-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="fo-1-nvt">
+                                    Rear brake, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{functionalChecks[1].label}"
+                                    th:value="'Rear brake'"
+                            />
+                        </tr>
+
+                        <!-- 2: Mobile phone holder -->
+                        <tr>
+                            <th scope="row">Mobile phone holder</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[2].state}"
+                                        id="fo-2-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="fo-2-bad">
+                                    Mobile phone holder, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[2].state}"
+                                        id="fo-2-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="fo-2-neutral">
+                                    Mobile phone holder, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[2].state}"
+                                        id="fo-2-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="fo-2-good">
+                                    Mobile phone holder, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[2].state}"
+                                        id="fo-2-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="fo-2-nvt">
+                                    Mobile phone holder, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{functionalChecks[2].label}"
+                                    th:value="'Mobile phone holder'"
+                            />
+                        </tr>
+
+                        <!-- 3: Hub gear -->
+                        <tr>
+                            <th scope="row">Hub gear</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[3].state}"
+                                        id="fo-3-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="fo-3-bad">
+                                    Hub gear, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[3].state}"
+                                        id="fo-3-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="fo-3-neutral">
+                                    Hub gear, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[3].state}"
+                                        id="fo-3-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="fo-3-good">
+                                    Hub gear, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[3].state}"
+                                        id="fo-3-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="fo-3-nvt">
+                                    Hub gear, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{functionalChecks[3].label}"
+                                    th:value="'Hub gear'"
+                            />
+                        </tr>
+
+                        <!-- 4: Front light -->
+                        <tr>
+                            <th scope="row">Front light</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[4].state}"
+                                        id="fo-4-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="fo-4-bad">
+                                    Front light, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[4].state}"
+                                        id="fo-4-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="fo-4-neutral">
+                                    Front light, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[4].state}"
+                                        id="fo-4-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="fo-4-good">
+                                    Front light, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[4].state}"
+                                        id="fo-4-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="fo-4-nvt">
+                                    Front light, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{functionalChecks[4].label}"
+                                    th:value="'Front light'"
+                            />
+                        </tr>
+
+                        <!-- 5: Front brake -->
+                        <tr>
+                            <th scope="row">Front brake</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[5].state}"
+                                        id="fo-5-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="fo-5-bad">
+                                    Front brake, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[5].state}"
+                                        id="fo-5-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="fo-5-neutral">
+                                    Front brake, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[5].state}"
+                                        id="fo-5-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="fo-5-good">
+                                    Front brake, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[5].state}"
+                                        id="fo-5-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="fo-5-nvt">
+                                    Front brake, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{functionalChecks[5].label}"
+                                    th:value="'Front brake'"
+                            />
+                        </tr>
+
+                        <!-- 6: Saddle suspension -->
+                        <tr>
+                            <th scope="row">Saddle suspension</th>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[6].state}"
+                                        id="fo-6-bad"
+                                        value="-"
+                                />
+                                <label class="visually-hidden" for="fo-6-bad">
+                                    Saddle suspension, Bad
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[6].state}"
+                                        id="fo-6-neutral"
+                                        value="0"
+                                />
+                                <label class="visually-hidden" for="fo-6-neutral">
+                                    Saddle suspension, Neutral
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[6].state}"
+                                        id="fo-6-good"
+                                        value="+"
+                                />
+                                <label class="visually-hidden" for="fo-6-good">
+                                    Saddle suspension, Good
+                                </label>
+                            </td>
+                            <td class="state-cell">
+                                <input
+                                        type="radio"
+                                        th:field="*{functionalChecks[6].state}"
+                                        id="fo-6-nvt"
+                                        value="nvt"
+                                />
+                                <label class="visually-hidden" for="fo-6-nvt">
+                                    Saddle suspension, Not applicable
+                                </label>
+                            </td>
+                            <input
+                                    type="hidden"
+                                    th:field="*{functionalChecks[6].label}"
+                                    th:value="'Saddle suspension'"
+                            />
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Save Report
+                </button>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+
+
+</body>
+</html>

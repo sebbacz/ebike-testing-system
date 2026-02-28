@@ -1,0 +1,47 @@
+GET http://localhost:8787/api/test/report/d6e74c32-cb83-4def-8efc-96f0d4519c54
+
+###
+
+POST http://localhost:8787/api/test
+Content-Type: application/json
+Accept: application/json
+
+{
+  "type": "STRESS",
+  "batteryCapacity": 444,
+  "maxSupport": 333,
+  "enginePowerMax": 600,
+  "enginePowerNominal": 600,
+  "engineTorque": 85
+}
+
+
+###
+
+GET http://testbench.raoul.dev/api/test/bd98613d-1ede-4119-91d5-ea7ba4ca1f87/report
+X-Api-Key: 8c07417b-6b08-43c8-ae9d-261738e67661
+
+###
+
+GET http://testbench.raoul.dev/api/test/bd98613d-1ede-4119-91d5-ea7ba4ca1f87
+X-Api-Key: 8c07417b-6b08-43c8-ae9d-261738e67661
+
+###
+
+POST http://testbench.raoul.dev/api/test
+X-Api-Key: 8c07417b-6b08-43c8-ae9d-261738e67661
+Content-Type: application/json
+Accept: application/json
+
+{
+  "type": "FAST",
+  "batteryCapacity": 434,
+  "maxSupport": 343,
+  "enginePowerMax": 565,
+  "enginePowerNominal": 565,
+  "engineTorque": 77
+}
+
+###
+
+GET http://localhost:8787/api/ebikes/1

@@ -1,0 +1,81 @@
+/* Smooth fonts & layout */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
+}
+
+/* Header */
+h2 {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Card Improvements */
+.card {
+    border-radius: 0.75rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+    font-size: 1rem;
+    font-weight: 600;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+
+/* Table Styling */
+.table thead {
+    background-color: #f1f3f5;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+.table-hover tbody tr:hover {
+    background-color: #f8f9fc;
+}
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+}
+.btn:hover {
+    opacity: 0.9;
+}
+
+/* Form Select */
+.form-select {
+    min-width: 160px;
+}
+
+/* File Upload Section */
+input[type="file"]::file-selector-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+input[type="file"]::file-selector-button:hover {
+    background-color: #bb2d3b;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .text-md-end {
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+}

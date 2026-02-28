@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <th:block th:replace="~{fragments/heading :: heading (title = 'All eBikes')}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script type="module" th:src="@{/js/bikes.js}"></script>
+</head>
+<body data-context="all-ebikes">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div>
+    <a href="/technician/dashboard" class="btn btn-success me-3">View Dashboard</a>
+</div>
+
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 th:text="'All Bikes'">Bikes</h2>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addBikeModal">
+            + Add Bike
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle" id="bikeTable">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Battery</th>
+                    <th>Engine Model</th>
+                    <th>Customer Count</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="bikeTableBody">
+                <!-- Dynamically populated -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Bike Modal -->
+<div class="modal fade" id="addBikeModal" tabindex="-1" aria-labelledby="addBikeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="addBikeForm" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBikeModalLabel">Add Bike</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Brand</label>
+                    <input type="text" name="brand" class="form-control" required/>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Model</label>
+                    <input type="text" name="model" class="form-control" required/>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Battery</label>
+                    <input type="text" name="battery" class="form-control" required/>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Ebike Model</label>
+                    <select name="modelId" class="form-select" required>
+                        <option value="" disabled selected>Select model</option>
+                        <option th:each="model : ${ebikeModels}"
+                                th:value="${model.id}"
+                                th:text="${model.name}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label">Customer</label>
+                    <select name="customerId" class="form-select" required>
+                        <option value="" disabled selected>Select customer</option>
+                        <option th:each="customer : ${customers}"
+                                th:value="${customer.id}"
+                                th:text="${customer.email}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Add Bike</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--&lt;!&ndash; Run Test Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="runTestModal" tabindex="-1" aria-labelledby="runTestModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog modal-lg">-->
+<!--        <form id="runTestForm"-->
+<!--              th:action="@{/technician/customers/{cust}/bikes/{bike}/run-test(cust=${customer.id},bike=${0})}"-->
+<!--              th:method="post"-->
+<!--              class="modal-content">-->
+<!--            <input type="hidden" name="bikeId" id="bikeIdInput" />-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title" id="runTestModalLabel">Enter Test Information</h5>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body row g-3">-->
+<!--                <div class="col-md-6">-->
+<!--                    <label class="form-label">Type</label>-->
+<!--                    <select id="testType" name="type" class="form-select" required>-->
+<!--                        <option value="STRESS">STRESS</option>-->
+<!--                        <option value="FAST">FAST</option>-->
+<!--                        <option value="EFFICIENCY">EFFICIENCY</option>-->
+<!--                        <option value="MANUAL">MANUAL</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label for="batteryCapacity" class="form-label">Battery Capacity</label>-->
+<!--                    <input id="batteryCapacity" name="batteryCapacity" type="number" class="form-control" required />-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label for="maxSupport" class="form-label">Max Support</label>-->
+<!--                    <input id="maxSupport" name="maxSupport" type="number" class="form-control" required />-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label for="enginePowerMax" class="form-label">Engine Power Max</label>-->
+<!--                    <input id="enginePowerMax" name="enginePowerMax" type="number" class="form-control" required />-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label for="enginePowerNominal" class="form-label">Engine Power Nominal</label>-->
+<!--                    <input id="enginePowerNominal" name="enginePowerNominal" type="number" class="form-control" required />-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label for="engineTorque" class="form-label">Engine Torque</label>-->
+<!--                    <input id="engineTorque" name="engineTorque" type="number" class="form-control" required />-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="submit" class="btn btn-success">Run Test</button>-->
+<!--            </div>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+
+</html>

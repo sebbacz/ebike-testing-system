@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:17.2-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: 'evalbikes'
+      POSTGRES_USER: 'spring'
+      POSTGRES_PASSWORD: 'spring'
+    ports:
+      - '5555:5432'
+
+  test-db:
+    image: postgres:17.2-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: 'evalbikes-test'
+      POSTGRES_USER: 'springtest'
+      POSTGRES_PASSWORD: 'springtest'
+    ports:
+      - '6666:5432'

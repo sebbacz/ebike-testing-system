@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:replace="~{fragments/heading :: heading (title = 'Customers')}"/>
+  <link rel="stylesheet" th:href="@{/css/techniciandashboard.css}">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="max-w-7xl mx-auto py-10 px-6">
+  <h1 class="text-3xl font-bold mb-6 text-center">Customers</h1>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white shadow-md rounded-lg">
+      <thead>
+      <tr>
+        <th class="p-3 text-left">Name</th>
+        <th class="p-3 text-left">Email</th>
+        <th class="p-3 text-left">Address</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="customer : ${customers}" class="border-b hover:bg-gray-100">
+        <td class="p-3" th:text="${customer.name}"></td>
+        <td class="p-3" th:text="${customer.email}"></td>
+        <td class="p-3" th:text="${customer.address}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

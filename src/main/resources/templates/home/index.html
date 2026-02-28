@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <th:block th:replace="~{fragments/heading :: heading (title = 'Ebike Testing System - Home')}"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<!-- Navigation Bar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<!-- Main Content -->
+<body class="landing is-preload">
+<div id="page-wrapper">
+
+
+
+    <section id="banner">
+        <h2>eVALeBike</h2>
+        <p>The best method to test and repair eBikes efficiently!</p>
+        <ul class="actions special">
+            <li><a href="/about" class="button">Learn More</a></li>
+        </ul>
+    </section>
+
+    <section id="main" class="container">
+
+        <section class="box special">
+            <header class="major">
+                <h2>Introducing the perfect testbench system
+                    <br />
+                    for eBike testing</h2>
+                <p>Located in Antwerp, our testbenches allow technicians and admins to run extensive tests to evaluate the performance of the eBikes they are working on.</p>
+                <div class="feature-box-container">
+                    <div class="feature-box">
+                        <i class="bi bi-speedometer2"></i>
+                        <h3>Fast Test Results</h3>
+                        <p>Using our test bench tool</p>
+                    </div>
+                    <div class="feature-box">
+                        <i class="bi bi-upc-scan"></i>
+                        <h3>QR Code Results</h3>
+                        <p>Results displayed with QR code</p>
+                    </div>
+                    <div class="feature-box">
+                        <i class="bi bi-tools"></i>
+                        <h3>Extensive Maintenance</h3>
+                        <p>Bike maintenance results provided</p>
+                    </div>
+                </div>
+
+
+            </header>
+        </section>
+
+    </section>
+</div>
+</body>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

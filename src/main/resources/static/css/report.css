@@ -1,0 +1,177 @@
+@media print {
+    html, body {
+        width: 210mm;
+        height: auto;
+    }
+
+    #downloadPdfBtn {
+        display: none !important;
+    }
+
+    .section-box {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        margin-bottom: 1rem;
+    }
+
+    .row {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .col-md-6 {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .report-header {
+        page-break-after: avoid;
+    }
+
+    .table, .table-sm {
+        break-inside: avoid;
+    }
+
+    .legend {
+        break-inside: avoid;
+    }
+
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+
+
+
+#kdg-logo-report {
+    filter: invert(100%);
+    height: 40px;
+    margin-right: 10px;
+}
+
+#reportDate{
+    color: black;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+}
+.container-fluid {
+    padding: 20px;
+}
+.report-header {
+    background-color: #fff;
+    padding: 15px 20px;
+    border-bottom: 2px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+.report-header img {
+    height: 40px; /* Adjust as needed for your logo */
+    margin-right: 15px;
+}
+.report-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: black;
+}
+.report-header .score-box {
+    background-color: #0d6efd;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    white-space: nowrap; /* Prevent wrapping of score box content */
+}
+.report-header .score-box .score-label {
+    font-size: 0.8rem;
+    margin-right: 5px;
+}
+.section-box {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.section-box h3 {
+    font-size: 1.2rem;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #0d6efd;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+.section-box label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+    font-size: 0.85rem; /* Smaller labels */
+}
+.form-control-sm {
+    height: calc(1.8125rem + 2px); /* Adjust height for smaller inputs */
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+.table {
+    margin-bottom: 0;
+}
+.table thead th {
+    background-color: #e9ecef;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    vertical-align: middle;
+    font-size: 0.85rem; /* Smaller table headers */
+}
+.table tbody td {
+    vertical-align: middle;
+    font-size: 0.85rem; /* Smaller table body text */
+}
+.table-sm td, .table-sm th {
+    padding: 0.3rem; /* Smaller padding for compact tables */
+}
+.table-bordered {
+    border: 1px solid #dee2e6;
+}
+.legend {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #e9ecef;
+    font-size: 0.8rem; /* Smaller legend text */
+    color: #666;
+}
+.legend-item {
+    display: inline-block;
+    margin-right: 15px;
+    font-weight: normal;
+}
+.footer-notes {
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.form-check-inline {
+    margin-right: 1.5rem;
+}
+.btn-lg {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/heading :: heading (title = 'Inspection Report Details')}"/>
+    <link rel="stylesheet" th:href="@{/css/report.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div id="pdf-section">
+    <div class="report-header">
+        <div class="d-flex align-items-center">
+            <img th:src="@{/assets/KdG_logo_en.png}" alt="KdG Logo" id="kdg-logo-report">
+            <h1>E-bike Test Report</h1>
+        </div>
+        <span style="font-size: 1rem; margin-left: 35%;">Created At: <span id="reportDate"></span></span>
+        <div class="score-box">
+            <span class="score-label">Score:</span> <span id="overallScoreDisplay"></span>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="section-box">
+                    <h3>Identification</h3>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Test UUID</label>
+                            <input type="text" class="form-control form-control-sm" id="testUuidDisplay" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Brand</label>
+                            <input type="text" class="form-control form-control-sm" id="brandDisplay" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Model</label>
+                            <input type="text" class="form-control form-control-sm" id="modelDisplay" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Engine Model</label>
+                            <input type="text" class="form-control form-control-sm" id="driveTypeDisplay" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Battery Capacity</label>
+                            <input type="text" class="form-control form-control-sm" id="batteryCapacityWhDisplay"
+                                   readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">First Registration</label>
+                            <input type="text" class="form-control form-control-sm" id="firstRegistrationDisplay"
+                                   readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Max Support</label>
+                            <input type="text" class="form-control form-control-sm" id="maxSupportPctDisplay" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Engine Power (max)</label>
+                            <input type="text" class="form-control form-control-sm" id="enginePowerMaxWDisplay"
+                                   readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Engine Power (nominal)</label>
+                            <input type="text" class="form-control form-control-sm" id="enginePowerNomWDisplay"
+                                   readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Engine Torque</label>
+                            <input type="text" class="form-control form-control-sm" id="engineTorqueNmDisplay" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Visual Inspection</h3>
+                    <div class="legend">
+                        <span class="legend-item">-- Very Bad</span>
+                        <span class="legend-item">- Bad</span>
+                        <span class="legend-item"> Neutral</span>
+                        <span class="legend-item">+ Good</span>
+                        <span class="legend-item">++ Very Good</span>
+                        <span class="legend-item">n.a. Not Applicable</span></div>
+                    <table class="table table-sm table-bordered" id="visualInspectionTable">
+                        <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-box">
+                    <h3>Comments</h3>
+                    <div class="mb-3">
+                        <textarea class="form-control" id="commentDisplay" rows="4" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="section-box">
+                    <h3>Test Procedures Overview</h3>
+                    <table class="table table-sm table-bordered" id="testProceduresTable">
+                        <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Result</th>
+                            <th>Deviation</th>
+                            <th>Unit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="text-end fw-bold mt-2">
+                        Score: <span id="displayTestProcScore"></span>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Nominal Load</h3>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Result</th>
+                            <th>Unit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Continuous Load: <span id="displayNominalLoadContW"></span>
+                            </td>
+                            <td>W</td>
+                        </tr>
+                        <tr>
+                            <td>Temperature Rise: <span id="displayNominalTempRiseCPerWh"></span>
+                            </td>
+                            <td>°C/Wh</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="text-end fw-bold mt-2">
+                        Score: <span id="displayNominalLoadScore"></span>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Battery Test (Max Power)</h3>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Result</th>
+                            <th>Unit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Available Capacity: <span id="displayBatteryTestCapacityWh"></span>
+                            </td>
+                            <td>Wh</td>
+                        </tr>
+                        <tr>
+                            <td>Battery Health: <span id="displayBatteryTestHealthPct"></span>
+                            </td>
+                            <td>%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="text-end fw-bold mt-2">
+                        Score: <span id="displayBatteryTestScore"></span>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Bearing Health</h3>
+                    <table class="table table-sm table-bordered" id="bearingConditionsTable">
+                        <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Result</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="text-end fw-bold mt-2">
+                        Score: <span id="displayBearingScore"></span>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Functional Operation</h3>
+                    <table class="table table-sm table-bordered" id="functionalChecksTable">
+                        <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+            <button id="downloadPdfBtn" class="btn btn-primary">Download as PDF</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script type="module" th:src="@{/js/display-report.js}"></script>
+</body>
+</html>
